@@ -3,7 +3,11 @@ package GeekBrains;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.WebDriverWait;
-
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,7 +19,7 @@ public class DummyTest extends GBAbstractTest {
 
 
     @Test
-    public void testCreateDummy() throws InterruptedException{
+    public void testCreateDummy() throws InterruptedException, IOException {
         login();
 
         // Открытие модального окна для создания dummy
@@ -41,6 +45,10 @@ public class DummyTest extends GBAbstractTest {
         By dummyTitleLocator = By.xpath("//*[@id=\"app\"]/main/div/div/div[1]/div[1]");
         assertTrue(driver.findElement(dummyTitleLocator).isDisplayed(),
                 "Dummy с именем '" + DUMMY_NAME + "' не появился в таблице.");
+
+        File screenshotFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+        Files.copy(screenshotFile.toPath(), new File("src/test/resources/DummyTest.png").toPath());
+
         Thread.sleep(5000); // Задержка в 5 секунды
 
     }
