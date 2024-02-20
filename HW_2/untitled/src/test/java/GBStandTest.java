@@ -3,7 +3,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import pom.StudentPage;
-import pom.StudentCredentialsModal;
+import pom.elements.StudentsTable;
 
 
 import java.io.IOException;
@@ -29,6 +29,8 @@ public class GBStandTest extends AbstractTest {
         assertTrue(errorMessage.contains("Invalid credentials."));
         takeScreenshot("loginWithoutUsernamePasswordExpectedErrorTest");
     }
+
+
 /*
 2) Более сложный тест на редактирование dummy (здесь будет важно добавить методы для поиска ID dummy по имени,
  чтобы сохранить его в переменную и потом в завершении теста использовать для проверки). Сценарий теста:
@@ -37,47 +39,36 @@ public class GBStandTest extends AbstractTest {
 - Сохраняем
 - Проверяем в таблице Dummies по ID, что имя изменилось
  */
-    @Test
-    public void findStudentNameByIdAfterRenameTest() throws IOException, InterruptedException {
-        driver.get("https://test-stand.gb.ru/login");
-        loginPage.login(USERNAME,PASSWORD);
-        studentPage = new StudentPage(driver, wait);
+@Test
+public void findStudentNameByIdAfterRenameTest() throws IOException, InterruptedException {
+    driver.get("https://test-stand.gb.ru/login");
+    loginPage.login(USERNAME, PASSWORD);
+    studentPage = new StudentPage(driver, wait);
 
-        // Создаем нового студента
-        String testStudentName = "NewStudent" + System.currentTimeMillis();
-        String testStudentLogin = "NewStudent" + System.currentTimeMillis();
-        studentPage.createStudent(testStudentName, testStudentLogin);
+    String testStudentName = "NewStudent" + System.currentTimeMillis();
+    String testStudentLogin = "NewStudent" + System.currentTimeMillis();
+    studentPage.createStudent(testStudentName, testStudentLogin);
 
-        studentPage.closeEditStudentModalWindow();
-        Thread.sleep(2000);
+    studentPage.closeEditStudentModalWindow();
+    Thread.sleep(2000);
 
-        // Подтверждаем, что студент с именем появился в таблице
-        studentPage.waitAndGetStudentTitleByText(testStudentName);
+    String originalStudentId = studentPage.getStudentIdByName(testStudentName);
 
-        // Редактируем студента
-        String newStudentName = "EditedStudent" + System.currentTimeMillis();
-        studentPage.editStudent(newStudentName);
+    String newStudentName = "EditedStudent" + System.currentTimeMillis();
+    studentPage.editStudent(newStudentName);
 
+    String editedStudentId = studentPage.getStudentIdByName(newStudentName);
 
-        // Проверка, что student с именем появился в таблице
-        By studentTitleLocator = By.xpath("//*[@id=\"app\"]/main/div/div/div[1]/div[1]");
-        assertTrue(driver.findElement(studentTitleLocator).isDisplayed(), testStudentName);
+    String editedStudentName = studentPage.getStudentNameById(originalStudentId);
+    assertEquals(newStudentName, editedStudentName);
 
-        // Получаем ID студента по имени
-        String studentId = studentPage.getStudentNameById(newStudentName);
+    System.out.println("Original Student Name: " + testStudentName);
+    System.out.println("Edited Student Name: " + newStudentName);
+    System.out.println("Original Student ID: " + originalStudentId);
+    System.out.println("Edited Student ID: " + editedStudentId);
 
-        // Проверка, что имя студента изменилось по ID
-        String editedStudentName = studentPage.getStudentNameById(studentId);
-        assertEquals(newStudentName, editedStudentName);
-
-        // Дополнительно можно вывести в консоль информацию (замените на логгирование, если нужно)
-        System.out.println("Original Student Name: " + testStudentName);
-        System.out.println("Edited Student Name: " + newStudentName);
-        System.out.println("Student ID: " + studentId);
-
-        takeScreenshot("editStudentAndGetNameByID");
-    }
-
+    takeScreenshot("editStudentAndGetNameByID");
+}
 
 /*
 3) Тест на проверку модального окна Credentials

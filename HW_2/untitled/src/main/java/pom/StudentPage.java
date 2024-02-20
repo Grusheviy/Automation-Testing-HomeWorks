@@ -86,12 +86,23 @@ public class StudentPage {
     }
 
     public String getStudentNameById(String studentId) {
-        StudentsTableRow studentRow = studentsTable.findStudentById(studentId);
-        return (studentRow != null) ? studentRow.getStudentName() : null;
+        StudentsTableRow student = studentsTable.findStudentById(studentId);
+        if (student != null) {
+            return student.getStudentName();
+        } else {
+            throw new RuntimeException("Student with ID " + studentId + " not found");
+        }
+    }
+    public String getStudentIdByName(String name) {
+        StudentsTableRow student = studentsTable.findStudentByName(name);
+        if (student != null) {
+            return student.getID();
+        } else {
+            throw new RuntimeException("Student with name " + name + " not found");
+        }
     }
 
     public void closeEditStudentModalWindow(){
         wait.until(ExpectedConditions.visibilityOf(closeCreateStudentButton)).click();
     }
-
 }
