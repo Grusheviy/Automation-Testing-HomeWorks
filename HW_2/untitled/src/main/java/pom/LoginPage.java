@@ -36,7 +36,6 @@
 
         private void typePasswordInField(String password) {
             wait.until(ExpectedConditions.visibilityOf(passwordField)).sendKeys(password);
-
         }
 
         private void clickLoginButton() {
